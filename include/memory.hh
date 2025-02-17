@@ -83,6 +83,7 @@ class memory
     }
 
         void load_binary(const std::string& binfile);
+        void dump_hex(size_t segment_id) const;
 
   address_t entry_point() const { return _ehdr.e_entry; }
 };

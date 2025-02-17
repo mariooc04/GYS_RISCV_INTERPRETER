@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
    processor proc;
 
    mem.load_binary(argv[1]);
+   mem.dump_hex(1);
 
    // read the entry point
    // ...

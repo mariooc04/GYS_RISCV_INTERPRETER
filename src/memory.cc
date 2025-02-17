@@ -60,7 +60,6 @@ memory::load_binary(const std::string& binfile)
     // entry point
     //Elf32_Addr _entry_addr = _ehdr.e_entry;
 
-    // load sections in memory
     // load program header table
     for (int i = 0; i < _ehdr.e_phnum; ++i) {
         Elf32_Phdr phdr = *reinterpret_cast<Elf32_Phdr*>(_binary.data() + _ehdr.e_phoff + i * _ehdr.e_phentsize);
@@ -83,4 +82,16 @@ memory::load_binary(const std::string& binfile)
 
     // read ELF program header table,
     // ... to be completed
+}
+
+
+// To verify the correctness of your implementation, please write a dump_hex method that receives a
+// segment identifier and prints its content as 32 bit hex values.
+void memory::dump_hex(size_t segment_id) const
+{
+    const segment& seg = _segments[segment_id];
+    for (size_t i = 0; i < seg._content.size(); i+=4) {
+        uint32_t val = *reinterpret_cast<const uint32_t*>(&seg._content[i]);
+        std::cout << std::hex << val << std::endl;
+    }
 }
