@@ -62,7 +62,7 @@ uint32_t instrs::load(memory& mem, processor & proc, uint32_t bitstream) {
   i_instruction ii{bitstream};
 
   // compute src address
-  address_t src = proc.read_reg(ii.rs1()) + ii.imm12();
+  address_t src = proc.read_reg(ii.rs1()) + ii.imm();
 
   // ToDo refactor with templates
   switch(ii.funct3()) {
