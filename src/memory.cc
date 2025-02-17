@@ -58,7 +58,7 @@ memory::load_binary(const std::string& binfile)
     }
 
     // entry point
-    Elf32_Addr _entry_addr = _ehdr.e_entry;
+    //Elf32_Addr _entry_addr = _ehdr.e_entry;
 
     // load sections in memory
     // load program header table
