@@ -91,5 +91,30 @@ class j_instruction : public instruction {
         }
 };
 
+template<uint8_t funct3>
+void execute_load(mem::memory& mem, processor& proc,
+    mem::address_t addr, uint8_t rd);
+
+template<uint8_t funct3>
+void execute_store(mem::memory& mem, processor& proc,
+    mem::address_t addr, uint8_t rs2);
+
+// sign_extend
+template <typename T, unsigned B>
+inline T sign_extend(const T x)
+{
+    struct { T x:B; } s;
+    return s.x = x;
+}
+
+using instr_emulation = std::function<uint32_t(mem::memory& mem, processor& proc, uint32_t)>;
+
+uint32_t load(mem::memory& mem, processor& proc, uint32_t bitstream);
+uint32_t store(mem::memory& mem, processor& proc, uint32_t bitstream);
+uint32_t alui(mem::memory& mem, processor& proc, uint32_t bitstream);
+uint32_t alur(mem::memory& mem, processor& proc, uint32_t bitstream);
+uint32_t lui(mem::memory& mem, processor& proc, uint32_t bitstream);
+uint32_t jal(mem::memory& mem, processor& proc, uint32_t bitstream);
+uint32_t condbranch(mem::memory& mem, processor& proc, uint32_t bitstream);
 
 } // namespace instrs

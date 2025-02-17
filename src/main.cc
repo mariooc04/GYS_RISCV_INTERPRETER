@@ -18,6 +18,9 @@ int main(int argc, char *argv[])
    memory mem;
    processor proc;
 
+   
+
+
    mem.load_binary(argv[1]);
    mem.dump_hex(1);
 
