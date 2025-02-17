@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/periscvcope.dir/memory.cc.o CMakeFiles/periscvcope.dir/instructions.cc.o CMakeFiles/periscvcope.dir/main.cc.o -o periscvcope

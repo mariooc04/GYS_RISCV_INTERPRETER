@@ -1,0 +1,5 @@
+/home/kernelripper/Documents/Universidad/CURSO_24_25/GYS/P1/periscvcope-main/build-debug/CMakeFiles/edit_cache.dir
+/home/kernelripper/Documents/Universidad/CURSO_24_25/GYS/P1/periscvcope-main/build-debug/CMakeFiles/rebuild_cache.dir
+/home/kernelripper/Documents/Universidad/CURSO_24_25/GYS/P1/periscvcope-main/build-debug/src/CMakeFiles/periscvcope.dir
+/home/kernelripper/Documents/Universidad/CURSO_24_25/GYS/P1/periscvcope-main/build-debug/src/CMakeFiles/edit_cache.dir
+/home/kernelripper/Documents/Universidad/CURSO_24_25/GYS/P1/periscvcope-main/build-debug/src/CMakeFiles/rebuild_cache.dir
