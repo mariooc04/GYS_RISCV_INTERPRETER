@@ -109,12 +109,23 @@ inline T sign_extend(const T x)
 
 using instr_emulation = std::function<uint32_t(mem::memory& mem, processor& proc, uint32_t)>;
 
+// Operaciones de memoria
 uint32_t load(mem::memory& mem, processor& proc, uint32_t bitstream);
 uint32_t store(mem::memory& mem, processor& proc, uint32_t bitstream);
+
+// Operación alu con inmediato
 uint32_t alui(mem::memory& mem, processor& proc, uint32_t bitstream);
+
+// Operación alu con registro
 uint32_t alur(mem::memory& mem, processor& proc, uint32_t bitstream);
+
+// load upper immediate
 uint32_t lui(mem::memory& mem, processor& proc, uint32_t bitstream);
+
+// jump and link
 uint32_t jal(mem::memory& mem, processor& proc, uint32_t bitstream);
+
+// branch
 uint32_t condbranch(mem::memory& mem, processor& proc, uint32_t bitstream);
 
 } // namespace instrs

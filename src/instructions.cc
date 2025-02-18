@@ -116,3 +116,13 @@ uint32_t instrs::store(memory& mem, processor & proc, uint32_t bitstream) {
   // return next instruction
   return proc.next_pc();
 }
+
+// TODO alui
+
+// TODO alur
+
+// TODO lui
+
+// TODO jal
+
+// TODO condbranch
