@@ -18,7 +18,16 @@ int main(int argc, char *argv[])
    memory mem;
    processor proc;
 
-   
+   //map para hacer la relación instrucción-función
+   std::map <uint8_t, instr_emulation> dispatch_map = {
+       {0b0000011, instrs::load},
+       {0b0100011, instrs::store},
+       {0b0010011, instrs::alui},
+       {0b0110011, instrs::alur},
+       {0b0110111, instrs::lui},
+       {0b1101111, instrs::jal},
+       {0b1100011, instrs::condbranch}
+   };
 
 
    mem.load_binary(argv[1]);

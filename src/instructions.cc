@@ -118,8 +118,36 @@ uint32_t instrs::store(memory& mem, processor & proc, uint32_t bitstream) {
 }
 
 // TODO alui
+uint32_t instrs::alui(memory& mem, processor & proc, uint32_t bitstream) {
+  i_instruction ii{bitstream};
+
+  uint32_t val = proc.read_reg(ii.rs1());
+  switch(ii.funct3()) {
+    case 0b000: val = val + ii.imm(); break;
+    case 0b001: val = val - ii.imm(); break;
+  }
+
+  proc.write_reg(ii.rd(), val);
+
+  return proc.next_pc();
+}
 
 // TODO alur
+uint32_t instrs::alur(memory& mem, processor & proc, uint32_t bitstream) {
+  r_instruction ii{bitstream};
+
+  uint32_t val1 = proc.read_reg(ii.rs1());
+  uint32_t val2 = proc.read_reg(ii.rs2());
+  uint32_t val = 0;
+  switch(ii.funct3()) {
+    case 0b000: val = val1 + val2; break;
+    case 0b001: val = val1 - val2; break;
+  }
+
+  proc.write_reg(ii.rd(), val);
+
+  return proc.next_pc();
+}
 
 // TODO lui
 
