@@ -117,7 +117,7 @@ uint32_t instrs::store(memory& mem, processor & proc, uint32_t bitstream) {
   return proc.next_pc();
 }
 
-// TODO alui
+// alu and immediate
 uint32_t instrs::alui(memory& mem, processor & proc, uint32_t bitstream) {
   i_instruction ii{bitstream};
 
@@ -132,7 +132,7 @@ uint32_t instrs::alui(memory& mem, processor & proc, uint32_t bitstream) {
   return proc.next_pc();
 }
 
-// TODO alur
+// alu and register
 uint32_t instrs::alur(memory& mem, processor & proc, uint32_t bitstream) {
   r_instruction ii{bitstream};
 
@@ -149,8 +149,47 @@ uint32_t instrs::alur(memory& mem, processor & proc, uint32_t bitstream) {
   return proc.next_pc();
 }
 
-// TODO lui
+// load upper immediate
+uint32_t instrs::lui(memory& mem, processor& proc, uint32_t bitstream) {
+  u_instruction ii{bitstream};
 
-// TODO jal
+  proc.write_reg(ii.rd(), ii.imm());
+
+  return proc.next_pc();
+}
+
+// jump and link
+uint32_t instrs::jal(memory& mem, processor& proc, uint32_t bitstream) {
+  j_instruction ii{bitstream};
+
+  // compute src address
+  address_t src = proc.next_pc() + ii.imm();
+
+  // save return address
+  proc.write_reg(1, proc.next_pc());
+
+  // jump
+  return src;
+}
 
 // TODO condbranch
+uint32_t instrs::condbranch(memory& mem, processor& proc, uint32_t bitstream) {
+  b_instruction ii{bitstream};
+
+  uint32_t val1 = proc.read_reg(ii.rs1());
+  uint32_t val2 = proc.read_reg(ii.rs2());
+  uint32_t val = 0;
+  switch(ii.funct3()) {
+    case 0b000: val = val1 + val2; break;
+    case 0b001: val = val1 - val2; break;
+  }
+
+  // Implementation of branch
+  if (val == 0) {
+    // compute src address
+    address_t src = proc.next_pc() + ii.imm();
+
+    // jump
+    return src;
+  }
+}
