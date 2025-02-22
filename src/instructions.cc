@@ -121,6 +121,8 @@ uint32_t instrs::store(memory& mem, processor & proc, uint32_t bitstream) {
 uint32_t instrs::alui(memory& mem, processor & proc, uint32_t bitstream) {
   i_instruction ii{bitstream};
 
+  mem.dump_hex(1);
+
   uint32_t val = proc.read_reg(ii.rs1());
   switch(ii.funct3()) {
     case 0b000: val = val + ii.imm(); break;
@@ -135,6 +137,8 @@ uint32_t instrs::alui(memory& mem, processor & proc, uint32_t bitstream) {
 // alu and register
 uint32_t instrs::alur(memory& mem, processor & proc, uint32_t bitstream) {
   r_instruction ii{bitstream};
+
+  mem.dump_hex(1);
 
   uint32_t val1 = proc.read_reg(ii.rs1());
   uint32_t val2 = proc.read_reg(ii.rs2());
@@ -153,6 +157,8 @@ uint32_t instrs::alur(memory& mem, processor & proc, uint32_t bitstream) {
 uint32_t instrs::lui(memory& mem, processor& proc, uint32_t bitstream) {
   u_instruction ii{bitstream};
 
+  mem.dump_hex(1);
+
   proc.write_reg(ii.rd(), ii.imm());
 
   return proc.next_pc();
@@ -161,6 +167,8 @@ uint32_t instrs::lui(memory& mem, processor& proc, uint32_t bitstream) {
 // jump and link
 uint32_t instrs::jal(memory& mem, processor& proc, uint32_t bitstream) {
   j_instruction ii{bitstream};
+
+  mem.dump_hex(1);
 
   // compute src address
   address_t src = proc.next_pc() + ii.imm();
@@ -175,6 +183,8 @@ uint32_t instrs::jal(memory& mem, processor& proc, uint32_t bitstream) {
 // TODO condbranch
 uint32_t instrs::condbranch(memory& mem, processor& proc, uint32_t bitstream) {
   b_instruction ii{bitstream};
+
+  mem.dump_hex(1);
 
   uint32_t val1 = proc.read_reg(ii.rs1());
   uint32_t val2 = proc.read_reg(ii.rs2());
@@ -191,5 +201,8 @@ uint32_t instrs::condbranch(memory& mem, processor& proc, uint32_t bitstream) {
 
     // jump
     return src;
+  }
+  else {
+    return proc.next_pc();
   }
 }

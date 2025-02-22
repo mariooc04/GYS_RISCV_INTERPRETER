@@ -48,6 +48,10 @@ int main(int argc, char *argv[])
    do
    {
        // main interpreter loop
+        pc = proc.read_pc();
+        uint32_t instr = mem.read<uint32_t>(pc);
+        next_pc = dispatch_map[(instr & 0x7F)](mem, proc, instr);
+        proc.write_pc(next_pc);
        // ...
        exec_instrs++;
    } while (next_pc != pc); // look for while(1) in the code
