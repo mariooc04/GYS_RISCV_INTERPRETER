@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <functional>
 
+#include <iostream>
+
 #include <memory.hh>
 #include <processor.hh>
 
@@ -47,14 +49,27 @@ class i_instruction : public instruction {
         constexpr uint8_t rd() const { return bits(7, 5); }
         constexpr uint8_t funct3() const { return bits(12, 3); }
         constexpr uint8_t rs1() const { return bits(15, 5); }
-        constexpr uint8_t imm() const { return bits(20, 12); }
+
+        // Hago la extensión de signo con OR
+        constexpr uint32_t imm() const { return (bits(31, 1) == 1) ? (0xFFFFF000 | bits(20, 12)) : bits(20, 12); }
+
+        //constexpr uint32_t imm() const { return sign_extend<uint32_t, 12>(bits(0, 12)); }
 };
 
 class s_instruction : public instruction {
     public:
         s_instruction(uint32_t bitstream) :
             instruction(bitstream, type::s) {}
-        constexpr uint32_t imm() const { return ((bits(25, 7) << 5) | (bits(7, 5))); }
+
+        // Hago la extensión de signo con OR
+        uint32_t imm_ = (bits(25, 7) << 5) | (bits(7, 5));
+
+        constexpr int32_t imm() const {
+            return (bits(31, 1) == 1) ? (0xFFFFF000 | imm_) : imm_;
+        }
+        
+        
+        //constexpr uint32_t imm() const { return ((bits(25, 7) << 5) | (bits(7, 5))); }
         constexpr uint8_t funct3() const { return bits(12, 3); }
         constexpr uint8_t rs1() const { return bits(15, 5); }
         constexpr uint8_t rs2() const { return bits(20, 5); }
@@ -114,18 +129,18 @@ uint32_t load(mem::memory& mem, processor& proc, uint32_t bitstream);
 uint32_t store(mem::memory& mem, processor& proc, uint32_t bitstream);
 
 // Operación alu con inmediato
-uint32_t alui(mem::memory& mem, processor& proc, uint32_t bitstream);
+uint32_t alui(mem::memory&, processor& proc, uint32_t bitstream);
 
 // Operación alu con registro
-uint32_t alur(mem::memory& mem, processor& proc, uint32_t bitstream);
+uint32_t alur(mem::memory&, processor& proc, uint32_t bitstream);
 
 // load upper immediate
-uint32_t lui(mem::memory& mem, processor& proc, uint32_t bitstream);
+uint32_t lui(mem::memory&, processor& proc, uint32_t bitstream);
 
 // jump and link
-uint32_t jal(mem::memory& mem, processor& proc, uint32_t bitstream);
+uint32_t jal(mem::memory&, processor& proc, uint32_t bitstream);
 
 // branch
-uint32_t condbranch(mem::memory& mem, processor& proc, uint32_t bitstream);
+uint32_t condbranch(mem::memory&, processor& proc, uint32_t bitstream);
 
 } // namespace instrs
