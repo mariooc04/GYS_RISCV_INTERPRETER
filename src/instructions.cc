@@ -127,6 +127,9 @@ uint32_t instrs::alui(memory&, processor & proc, uint32_t bitstream) {
     case 0b000: val = val + ii.imm(); break;
   }
 
+  std::cout << "ALUI: " << val << std::endl;
+  std::cout << "ALUI: " << (uint32_t)ii.rd() << std::endl;
+
   proc.write_reg(ii.rd(), val);
 
 
