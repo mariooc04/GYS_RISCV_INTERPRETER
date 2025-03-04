@@ -29,7 +29,7 @@ template<>
 void instrs::execute_load<0b000>(mem::memory& mem, processor & proc,
     mem::address_t addr, uint8_t rd)
 {
-  uint32_t val = sign_extend<uint32_t, sizeof(uint8_t)*8>(mem.read<uint8_t>(addr));
+  uint32_t val = static_cast<uint32_t>(sign_extend<int32_t, sizeof(uint8_t)*8>(mem.read<uint8_t>(addr)));
   proc.write_reg(rd, val);
 }
 
@@ -40,8 +40,8 @@ void instrs::execute_load<0b001>(mem::memory& mem, processor & proc,
 {
   assert((addr & 0b1) == 0); // ensure alignment
   // perform sign extension
-  uint32_t val = sign_extend<uint32_t,
-           sizeof(uint16_t)*8>(mem.read<uint16_t>(addr));
+  uint32_t val = static_cast<uint32_t>(sign_extend<int32_t,
+           sizeof(uint16_t)*8>(mem.read<uint16_t>(addr)));
   proc.write_reg(rd, val);
 }
 
@@ -123,13 +123,11 @@ uint32_t instrs::alui(memory&, processor & proc, uint32_t bitstream) {
 
   uint32_t val = proc.read_reg(ii.rs1());
   switch(ii.funct3()) {
-    case 0b001: val = val - ii.imm(); break;
+    //case 0b010: val = val - ii.imm(); break;
     case 0b000: val = val + ii.imm(); break;
+    case 0b001: val = val << (ii.imm() & 0x1F); break;
   }
-
-  std::cout << "ALUI: " << val << std::endl;
-  std::cout << "ALUI: " << (uint32_t)ii.rd() << std::endl;
-
+  
   proc.write_reg(ii.rd(), val);
 
 
@@ -144,7 +142,14 @@ uint32_t instrs::alur(memory&, processor & proc, uint32_t bitstream) {
   uint32_t val2 = proc.read_reg(ii.rs2());
   uint32_t val = 0;
   switch(ii.funct3()) {
-    case 0b000: val = val1 + val2; break;
+    case 0b000:
+      if (ii.funct7() == 0b0000000) {
+        val = val1 + val2;
+      } else if (ii.funct7() == 0b0000001) {
+        val = val1 * val2;
+      }
+      break;
+    break;
     case 0b001: val = val1 - val2; break;
   }
 
@@ -166,37 +171,45 @@ uint32_t instrs::lui(memory&, processor& proc, uint32_t bitstream) {
 uint32_t instrs::jal(memory&, processor& proc, uint32_t bitstream) {
   j_instruction ii{bitstream};
 
-  // compute src address
-  address_t src = proc.next_pc() + ii.imm();
+  uint32_t pc_ = proc.read_pc();
+  proc.write_reg(ii.rd(), pc_ + 4);
 
-  // save return address
-  proc.write_reg(1, proc.next_pc());
+  address_t src = pc_ + ii.imm();
 
-  // jump
   return src;
 }
 
 // TODO condbranch
 uint32_t instrs::condbranch(memory&, processor& proc, uint32_t bitstream) {
-  b_instruction ii{bitstream};
+  b_instruction bi(bitstream);
 
-  uint32_t val1 = proc.read_reg(ii.rs1());
-  uint32_t val2 = proc.read_reg(ii.rs2());
-  uint32_t val = 0;
-  switch(ii.funct3()) {
-    case 0b000: val = val1 + val2; break;
-    case 0b001: val = val1 - val2; break;
+  uint32_t current_pc = proc.read_pc();
+  uint32_t val1 = proc.read_reg(bi.rs1());
+  uint32_t val2 = proc.read_reg(bi.rs2());
+
+  bool take_branch = false;
+  switch (bi.funct3()) {
+    case 0b000: // BEQ
+      take_branch = (val1 == val2);
+      break;
+    case 0b001: // BNE
+      take_branch = (val1 != val2);
+      break;
+    case 0b100: // BLT
+      take_branch = ((int32_t)val1 < (int32_t)val2);
+      break;
+    case 0b101: // BGE
+      take_branch = ((int32_t)val1 >= (int32_t)val2);
+      break;
+    case 0b110: // BLTU
+      take_branch = (val1 < val2);
+      break;
+    case 0b111: // BGEU
+      take_branch = (val1 >= val2);
+      break;
   }
 
-  // Implementation of branch
-  if (val == 0) {
-    // compute src address
-    address_t src = proc.next_pc() + ii.imm();
-
-    // jump
-    return src;
-  }
-  else {
-    return proc.next_pc();
-  }
+  // Si se cumple la condición, se suma el offset (imm) al siguiente PC
+  address_t addr = take_branch ? (current_pc + bi.imm()) : proc.next_pc();
+  return addr;
 }

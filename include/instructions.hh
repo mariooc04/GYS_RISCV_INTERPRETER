@@ -84,7 +84,8 @@ class b_instruction : public instruction {
         constexpr uint8_t rs2() const { return bits(20, 5); }
 
         constexpr uint32_t imm() const {
-            return (bits(31, 1) << 12) | (bits(7, 1) << 11) | (bits(25, 6) << 5) | (bits(8, 4) << 1);
+            uint32_t imm_ = (bits(31, 1) << 12) | (bits(7, 1) << 11) | (bits(25, 6) << 5) | (bits(8, 4) << 1);
+            return (imm_ & (1 << 12)) ? (imm_ | 0xFFE00000) : imm_;
         }   
 };
 
@@ -102,17 +103,10 @@ class j_instruction : public instruction {
             instruction(bitstream, type::j) {}
         constexpr uint8_t rd() const { return bits(7, 5); }
         constexpr uint32_t imm() const {
-            return (bits(31, 1) << 20) | (bits(12, 8) << 12) | (bits(20, 1) << 11) | (bits(21, 10) << 1);
+            uint32_t imm_ = (bits(31, 1) << 20) | (bits(12, 8) << 12) | (bits(20, 1) << 11) | (bits(21, 10) << 1);
+            return (imm_ & (1 << 20)) ? (imm_ | 0xFFE00000) : imm_;
         }
 };
-
-template<uint8_t funct3>
-void execute_load(mem::memory& mem, processor& proc,
-    mem::address_t addr, uint8_t rd);
-
-template<uint8_t funct3>
-void execute_store(mem::memory& mem, processor& proc,
-    mem::address_t addr, uint8_t rs2);
 
 // sign_extend
 template <typename T, unsigned B>
@@ -121,6 +115,14 @@ inline T sign_extend(const T x)
     struct { T x:B; } s;
     return s.x = x;
 }
+
+template<uint8_t funct3>
+void execute_load(mem::memory& mem, processor& proc,
+    mem::address_t addr, uint8_t rd);
+
+template<uint8_t funct3>
+void execute_store(mem::memory& mem, processor& proc,
+    mem::address_t addr, uint8_t rs2);
 
 using instr_emulation = std::function<uint32_t(mem::memory& mem, processor& proc, uint32_t)>;
 
