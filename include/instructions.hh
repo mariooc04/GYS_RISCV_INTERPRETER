@@ -85,7 +85,7 @@ class b_instruction : public instruction {
 
         constexpr uint32_t imm() const {
             uint32_t imm_ = (bits(31, 1) << 12) | (bits(7, 1) << 11) | (bits(25, 6) << 5) | (bits(8, 4) << 1);
-            return (imm_ & (1 << 12)) ? (imm_ | 0xFFE00000) : imm_;
+            return (imm_ & (1 << 12)) ? (imm_ | 0xFFFFE000) : imm_;
         }   
 };
 

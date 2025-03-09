@@ -126,6 +126,7 @@ uint32_t instrs::alui(memory&, processor & proc, uint32_t bitstream) {
     //case 0b010: val = val - ii.imm(); break;
     case 0b000: val = val + ii.imm(); break;
     case 0b001: val = val << (ii.imm() & 0x1F); break;
+    case 0b010: val = val - ii.imm(); break;
   }
   
   proc.write_reg(ii.rd(), val);
@@ -148,9 +149,8 @@ uint32_t instrs::alur(memory&, processor & proc, uint32_t bitstream) {
       } else if (ii.funct7() == 0b0000001) {
         val = val1 * val2;
       }
-      break;
     break;
-    case 0b001: val = val1 - val2; break;
+    case 0b010: val = val1 - val2; break;
   }
 
   proc.write_reg(ii.rd(), val);
@@ -172,7 +172,7 @@ uint32_t instrs::jal(memory&, processor& proc, uint32_t bitstream) {
   j_instruction ii{bitstream};
 
   uint32_t pc_ = proc.read_pc();
-  proc.write_reg(ii.rd(), pc_ + 4);
+  proc.write_reg(1, pc_ + 4);
 
   address_t src = pc_ + ii.imm();
 
